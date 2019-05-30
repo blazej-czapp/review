@@ -13,13 +13,3 @@ class Resource(models.Model):
 
     def is_hyperlink(self):
         return self.location.startswith("http") or self.location.startswith("www")
-
-class Annotation(models.Model):
-    res = models.ForeignKey(Resource, on_delete=models.CASCADE)
-
-class ReviewQuestion(models.Model):
-    question = models.TextField()
-    answer = models.TextField()
-
-class Note(models.Model):
-    note = models.TextField()
