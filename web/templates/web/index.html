@@ -1,0 +1,21 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}">
+
+<link rel="stylesheet" type="text/css" href="{% static 'web/alertify/css/themes/default.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'web/alertify/css/alertify.min.css' %}">
+
+<script type="text/javascript" src="{% static 'web/jquery-3.4.1.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'web/alertify/alertify.min.js' %}"></script>
+
+<script src="{% static 'web/jquery-ui-1.12.1.dialog/jquery-ui.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'web/jquery-ui-1.12.1.dialog/jquery-ui.min.css' %}">
+
+<script type="text/javascript">
+function reviewed(resource_id, new_review_count) {
+    $.post("{% url 'web:reviewed' %}", {resource_id : resource_id, new_rep_count : new_review_count, csrfmiddlewaretoken: "{{ csrf_token }}"});
+}
+</script>
+
+{% include "web/edit_new_resource.html" %}
+{% include "web/list_pending.html" %}

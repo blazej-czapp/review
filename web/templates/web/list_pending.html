@@ -1,0 +1,12 @@
+<!-- TODO: Use jQuery UI's Accordion? -->
+
+<div id="review_items">
+{% if resources %}
+    <h2>Today's review:</h2>
+    {% for res in resources %}
+        {% include 'web/review_item.html' with data=res %}
+    {% endfor %}
+{% else %}
+    <h2>Nothing for today</h2>
+{% endif %}
+</div>

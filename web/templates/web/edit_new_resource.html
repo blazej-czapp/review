@@ -1,0 +1,106 @@
+{% load static %}
+
+<style>
+    #new-resource-form label, #new-resource-form input { display:block; }
+    input.text { margin-bottom:12px; width:95%; padding: .4em; }
+    fieldset { padding:0; border:0; margin-top:25px; }
+    .ui-dialog .ui-state-error { padding: .3em; }
+    .validateTips { border: 1px solid transparent; padding: 0.3em; }
+</style>
+
+
+<script type="text/javascript">
+    $(function() {
+        var dialog, form,
+            caption = $("#caption"),
+            location = $("#location"),
+            notes = $("#notes"),
+            allFields = $( [] ).add(caption).add(location).add(notes),
+            tips = $(".validateTips");
+
+        function updateTips( t ) {
+            tips.text(t).addClass("ui-state-highlight");
+            setTimeout(function() {
+                tips.removeClass("ui-state-highlight", 1500);
+            }, 500);
+        }
+
+        function checkNotEmpty(input, name) {
+            if (input.val().length == 0) {
+                input.addClass( "ui-state-error" );
+                updateTips(name + " cannot be empty");
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function validateAndSendNewResource() {
+            allFields.removeClass("ui-state-error");
+
+            var valid = true;
+            valid = valid && checkNotEmpty(caption, "Caption");
+            valid = valid && checkNotEmpty(location, "Location");
+
+            if (valid) {
+                $.post('{% url 'web:add_new_resource' %}', $('#new-resource-form').serialize())
+                    .done(function() { alertify.success('Success'); })
+                    .fail(function() { alertify.error('Error'); });
+                dialog.dialog("close");
+            }
+
+            return valid;
+        }
+
+        dialog = $("#dialog-form").dialog({
+          autoOpen: false,
+          height: 400,
+          width: 350,
+          modal: true,
+          buttons: {
+            "Add": validateAndSendNewResource,
+            Cancel: function() {
+              dialog.dialog("close");
+            }
+          },
+          open: function() {
+            $("#validateTips").html("");
+          },
+          close: function() {
+            form[0].reset();
+            allFields.removeClass("ui-state-error");
+          }
+        });
+     
+        form = dialog.find("form").on("submit", function(event) {
+            event.preventDefault();
+            validateAndSendNewResource();
+        });
+
+        $("#open-edit-prompt").on("click", function() {
+            dialog.dialog("open");
+        });
+    });
+
+</script>
+
+<!-- Icon by Robert Walsh via https://www.iconfinder.com/icons/619553/add_create_new_plus_icon -->
+<img src="{% static 'web/add_blue.png' %}" style="cursor: pointer;" width="70em" id="open-edit-prompt">
+
+<div id="dialog-form" title="Add new review resource">
+    <p class="validateTips" id="validateTips"></p>
+
+    <form class="new-resource-form" id="new-resource-form" autocomplete="off">
+        <fieldset>
+            {% csrf_token %}
+            <label for="caption">Caption</label>
+            <input type="text" name="caption" id="caption" value="" class="text ui-widget-content ui-corner-all"> 
+            <label for="location">Location</label>
+            <input type="text" name="location" id="location" value="" class="text ui-widget-content ui-corner-all">
+            <label for="notes">Notes</label>
+            <input type="text" name="notes" id="notes" value="" class="text ui-widget-content ui-corner-all">
+
+            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+        </fieldset>
+    </form>
+</div>

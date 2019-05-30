@@ -1,0 +1,23 @@
+<div class="review_item" id="{{ data.id }}">
+    <div class="review_item_caption">
+        {% if data.is_hyperlink %}
+            <a target="_blank" rel="noopener noreferrer" href='{{ data.location }}'>{{ data.caption }}</a>
+        {% else %}
+            <strong>{{ data.caption }}</strong>
+        {% endif %}
+    </div>
+    {% if data.location and not data.is_hyperlink or data.notes %}
+        <div class="review_item_details">
+            {% if not data.is_hyperlink %}
+                {{ data.location }}<br>
+            {% endif %}
+            {% if data.notes %}
+                {{ data.notes }}<br>
+            {% endif %}
+        </div>
+    {% endif %}
+    <!-- sending desired new review count in case the button is clicked twice -->
+    <button onclick="reviewed({{ data.id }}, {{ data.rep_count|add:'1' }}); $('#{{ data.id }}').toggle('medium')">Happy</button>
+    <button onclick="reviewed({{ data.id }}, {{ data.rep_count }}); $('#{{ data.id }}').toggle('medium')">Not quite</button>
+    <button onclick="reviewed({{ data.id }}, {{ data.rep_count|add:'-1' }}); $('#{{ data.id }}').toggle('medium')">No clue</button>
+</div>

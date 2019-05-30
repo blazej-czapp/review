@@ -1,0 +1,21 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.review_item {
+    padding: 0.5em;
+}
+
+.review_item_caption {
+    padding-bottom: 0.5em;
+}
+
+.review_item_caption a {
+    color:#3399ff;
+    text-decoration: none;
+}
+
+.review_item_details {
+    padding-left: 1em;
+    padding-bottom: 0.5em;
+}
