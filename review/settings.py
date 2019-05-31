@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
+try:
+    from .local_settings import *
+except ImportError:
+    print("COULD NOT IMPORT LOCAL SETTINGS!")
+    pass
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -52,6 +58,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
     },
 ]
 
@@ -89,12 +96,5 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
-
-try:
-    from .local_settings import *
-except ImportError:
-    print("COULD NOT IMPORT LOCAL SETTINGS!")
-    pass
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = 'accounts/login'

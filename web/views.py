@@ -6,6 +6,7 @@ from web.utils import is_due_for_review
 from operator import attrgetter
 import datetime
 import logging
+from django.contrib.auth.decorators import login_required
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ logging.basicConfig(
     format = " %(levelname)s %(name)s: %(message)s",
 )
 
+@login_required
 def index(request):
     today = datetime.date.today()
 
@@ -21,6 +23,7 @@ def index(request):
 
     return render(request, 'web/index.html', {'resources': sorted(to_review, key=attrgetter('last_rep_date'))})
 
+@login_required
 def add_new_resource(request):
     today = datetime.date.today()
     caption = request.POST['caption']
@@ -32,6 +35,7 @@ def add_new_resource(request):
     Resource.objects.create(caption=caption, location=location, notes=request.POST['notes'], last_rep_date=today)
     return HttpResponse()
 
+@login_required
 def reviewed(request):
     new_rep_count = int(request.POST['new_rep_count'])
     if new_rep_count < 0:
