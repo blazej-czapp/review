@@ -1,11 +1,16 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 from freezegun import freeze_time
 import datetime
 from .models import Resource
 
 class ReviewListTests(TestCase):
+    def setUp(self):
+        user = User.objects.create_user('test', 'test@example.com', 'password123')
+        self.client.login(username='test', password='password123')
+
     def test_no_resources(self):
         response = self.client.get(reverse('web:index'))
         self.assertEqual(response.status_code, 200)
