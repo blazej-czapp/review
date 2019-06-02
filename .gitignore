@@ -2,3 +2,5 @@
 *.pyc
 *.sqlite3
 .python-version
+local_settings.py
+review_uwsgi.ini

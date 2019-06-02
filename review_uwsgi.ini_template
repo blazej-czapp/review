@@ -1,0 +1,25 @@
+# review_uwsgi.ini file - this should be symlinked from /etc/uwsgi/vassals/
+[uwsgi]
+
+# Django-related settings
+# the base directory (full path, path to repo in my setup)
+chdir           = <PROJECT DIR>
+# Django's wsgi file
+module          = review.wsgi
+# the virtualenv (full path)
+home            = <HOME DIR>/.pyenv/versions/review
+
+pythonpath = <HOME DIR>/.pyenv/versions/review/lib/python3.8/site-packages
+
+# process-related settings
+master          = true
+# maximum number of worker processes
+processes       = 1
+# the socket (abs path) - must be the same as in nginx server setup
+socket          = <>
+
+chown-socket    = www-data:www-data
+# clear environment on exit
+vacuum          = true
+
+daemonize = /var/log/uwsgi/review.uwsgi.log
