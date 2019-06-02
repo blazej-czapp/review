@@ -87,7 +87,8 @@
 <!-- Icon by Robert Walsh via https://www.iconfinder.com/icons/619553/add_create_new_plus_icon -->
 <img src="{% static 'web/add_blue.png' %}" style="cursor: pointer;" width="70em" id="open-edit-prompt">
 
-<div id="dialog-form" title="Add new review resource">
+<!-- display: none so that it doesn't flash on the screen before dialog() doesn't hide it -->
+<div id="dialog-form" title="Add new review resource" style='display: none;'>
     <p class="validateTips" id="validateTips"></p>
 
     <form class="new-resource-form" id="new-resource-form" autocomplete="off">
