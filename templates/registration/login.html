@@ -1,57 +1,93 @@
-<!-- from https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Authentication -->
+<!-- based on https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Authentication -->
 
-{% block content %}
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
 
-<style>
-  .container {
-      display: grid;
-      place-content: center;
-  }
+  {% block content %}
 
-  .login-wrapper {
-      display: grid;
-      grid-gap: 1em;
-      margin-top: 5em;
-  }
+  <style>
+    @media(min-width: 5in) {
+      .container {
+        display: grid;
+        grid-gap: 0.5em;
+        place-content: center;
+      }
 
-  button {
-      width: 5em;
-      justify-self: center;
-  }
-</style>
+      .login-wrapper {
+        width: 20em;
+      }
 
-<div class="container">
-  {% if form.errors %}
-    <p>Your username and password didn't match. Please try again.</p>
-  {% endif %}
+      .label {
+        margin-top: 1em;
+      }
 
-  {% if next %}
-    {% if user.is_authenticated %}
-      <p>Your account doesn't have access to this page. To proceed,
-      please login with an account that has access.</p>
-    {% else %}
-      <p>Please login to see this page.</p>
-    {% endif %}
-  {% endif %}
+      #id_username, #id_password, #id_submit {
+        height: 0.4in;
+        margin-top: 1em;
+        width: 100%;
+      }
+    }
 
-  <form method="post" action="{% url 'login' %}" class="login-wrapper">
-  {% csrf_token %}
-  <table>
+    @media(max-width: 5in){
+        .container {
+          place-content: unset;
+          text-align: center;
+        }
 
-  <tr>
-    <td>{{ form.username.label_tag }}</td>
-    <td>{{ form.username }}</td>
-  </tr>
+        #id_username, #id_password, #id_submit {
+          height: 0.4in;
+          margin-top: 1em;
+          display:inline-block;
+          width: 90%;
+        }
 
-  <tr>
-    <td>{{ form.password.label_tag }}</td>
-    <td>{{ form.password }}</td>
-  </tr>
-  </table>
+        .label {
+          display:inline-block;
+          width: 90%;
+          text-align: left;
+          margin-top: 1em;
+        }
 
-  <input type="submit" value="login" />
-  <input type="hidden" name="next" value="{{ next }}" />
-  </form>
-</div>
+        #message {
+          width: 90%;
+          display: inline-block;
+          text-align: left;
+        }
+    }
+  </style>
 
-{% endblock %}
+  <div class="container">
+    <div class="login-wrapper">
+      <div id="message">
+        {% if form.errors %}
+          <p>Your username and password didn't match. Please try again.</p>
+        {% else %}
+
+          {% if next %}
+            {% if user.is_authenticated %}
+              <p>Your account doesn't have access to this page. To proceed,
+              please login with an account that has access.</p>
+            {% else %}
+              <p>Please login to see this page.</p>
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="label">{{ form.username.label_tag }}</div>
+        <div>{{ form.username }}</div>
+
+        <div class="label">{{ form.password.label_tag }}</div>
+        <div>{{ form.password }}</div>
+        <input type="submit" value="Login" id="id_submit"/>
+        <input type="hidden" name="next" value="{{ next }}" />
+      </form>
+    </div>
+  </div>
+
+  {% endblock %}
+</body>
