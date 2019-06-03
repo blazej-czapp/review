@@ -6,8 +6,15 @@
     fieldset { padding:0; border:0; margin-top:25px; }
     .ui-dialog .ui-state-error { padding: .3em; }
     .validateTips { border: 1px solid transparent; padding: 0.3em; }
-</style>
 
+    #plus {
+        cursor: pointer;
+        width: 0.75in;
+        position: fixed;
+        bottom: 1em;
+        right: 1em;
+    }
+</style>
 
 <script type="text/javascript">
     $(function() {
@@ -77,7 +84,7 @@
             validateAndSendNewResource();
         });
 
-        $("#open-edit-prompt").on("click", function() {
+        $("#plus").on("click", function() {
             dialog.dialog("open");
         });
     });
@@ -85,7 +92,7 @@
 </script>
 
 <!-- Icon by Robert Walsh via https://www.iconfinder.com/icons/619553/add_create_new_plus_icon -->
-<img src="{% static 'web/add_blue.png' %}" style="cursor: pointer;" width="70em" id="open-edit-prompt">
+<img id="plus" src="{% static 'web/add_blue.png' %}">
 
 <!-- display: none so that it doesn't flash on the screen before dialog() doesn't hide it -->
 <div id="dialog-form" title="Add new review resource" style='display: none;'>
