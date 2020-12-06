@@ -1,2 +1,3 @@
-freezegun
 Django
+supermemo2
+markdown
