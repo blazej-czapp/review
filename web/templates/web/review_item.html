@@ -1,3 +1,5 @@
+{% load markdown_extras %}
+
 <div class="review_item" id="{{ data.id }}">
     <div class="review_item_caption">
         {% if data.is_hyperlink %}
@@ -12,7 +14,9 @@
                 {{ data.location }}<br>
             {% endif %}
             {% if data.notes %}
-                {{ data.notes }}<br>
+                {% autoescape off %}
+                    {{ data.notes | markdown }}
+                {% endautoescape %}<br>
             {% endif %}
         </div>
     {% endif %}
