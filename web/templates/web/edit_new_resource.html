@@ -45,9 +45,7 @@
         function validateAndSendNewResource() {
             allFields.removeClass("ui-state-error");
 
-            var valid = true;
-            valid = valid && checkNotEmpty(caption, "Caption");
-            valid = valid && checkNotEmpty(location, "Location");
+            const valid = checkNotEmpty(caption, "Caption");
 
             if (valid) {
                 $.post('{% url 'web:add_new_resource' %}', $('#new-resource-form').serialize())

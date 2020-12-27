@@ -5,8 +5,8 @@ class Resource(models.Model):
     rep_count = models.IntegerField('Times repeated', default=0)
     last_rep_date = models.DateField('Last repetition')
 
-    location = models.TextField(help_text="e.g. URL or book title")
-    notes = models.TextField(help_text="e.g. section title or book page number")
+    location = models.TextField(blank=True, null=True, help_text="e.g. URL or book title")
+    notes = models.TextField(blank=True, null=True, help_text="e.g. section title or book page number")
 
     def __str__(self):
         return self.caption

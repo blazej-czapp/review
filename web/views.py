@@ -29,7 +29,7 @@ def add_new_resource(request):
     caption = request.POST['caption']
     location = request.POST['location']
 
-    if not caption or not location:
+    if not caption:
         return HttpResponse(status=400, reason='caption or location is empty')
 
     Resource.objects.create(caption=caption, location=location, notes=request.POST['notes'], last_rep_date=today)
