@@ -11,7 +11,7 @@ from supermemo2 import SMTwo
 
 @login_required
 def index(request):
-    to_review = Resource.objects.filter(next_review__lte=datetime.date.today())
+    to_review = Resource.objects.filter(next_review__lte=datetime.date.today(), added_by=request.user)
 
     # arbitrary ordering just to keep the list stable
     return render(request, 'web/index.html', {'resources': sorted(to_review, key=attrgetter('id'))})
