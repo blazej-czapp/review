@@ -5,53 +5,58 @@ from django.shortcuts import redirect
 from web.utils import is_due_for_review
 from operator import attrgetter
 import datetime
-import logging
 from django.contrib.auth.decorators import login_required
 
-logger = logging.getLogger(__name__)
-
-logging.basicConfig(
-    level = logging.INFO,
-    format = " %(levelname)s %(name)s: %(message)s",
-)
+from supermemo2 import SMTwo
 
 @login_required
 def index(request):
-    today = datetime.date.today()
+    to_review = Resource.objects.filter(next_review__lte=datetime.date.today())
 
-    to_review = [res for res in Resource.objects.all() if is_due_for_review(res.rep_count, res.last_rep_date, today)]
-
-    return render(request, 'web/index.html', {'resources': sorted(to_review, key=attrgetter('last_rep_date'))})
+    # arbitrary ordering just to keep the list stable
+    return render(request, 'web/index.html', {'resources': sorted(to_review, key=attrgetter('id'))})
 
 @login_required
 def add_new_resource(request):
     today = datetime.date.today()
     caption = request.POST['caption']
-    location = request.POST['location']
 
     if not caption:
-        return HttpResponse(status=400, reason='caption or location is empty')
+        return HttpResponse(status=400, reason='caption is empty')
 
-    Resource.objects.create(caption=caption, location=location, notes=request.POST['notes'], last_rep_date=today)
+    # arbitrarily setting initial quality to 3 (that's what they do in supermemo2 docs)
+    sm = SMTwo(quality=3, first_visit=True)
+
+    Resource.objects.create(caption=caption, location=request.POST['location'], notes=request.POST['notes'],
+                            interval=sm.new_interval, repetitions=sm.new_repetitions, next_review=sm.next_review,
+                            easiness=sm.new_easiness)
     return HttpResponse()
 
 @login_required
 def reviewed(request):
-    new_rep_count = int(request.POST['new_rep_count'])
-    if new_rep_count < 0:
-        logger.warning('Attempt to set rep count to: ' + new_rep_count)
+    quality = int(request.POST['quality'])
+    if quality < 0 or quality > 5:
+        return HttpResponse(status=400, reason='Invalid recall quality: ' + quality)
 
     res_id = int(request.POST['resource_id'])
     res = Resource.objects.filter(id=res_id)
     if res.count() == 0:
-        logger.warning('Attempt to set rep count to non existent ID: ' + res_id)
+        return HttpResponse(status=400, reason='Attempt to review a non existent ID: ' + res_id)
 
     for r in res:
-        logger.info('Reviewed resource ' + str(res_id) +
-                    '; old rep_count: ' + str(r.rep_count) +
-                    '; new rep_count: ' + str(new_rep_count))
-        r.rep_count = new_rep_count
-        r.last_rep_date = datetime.date.today()
+        # Take current review's quality and infer new values for review variables:
+        #  - repetitions: quality <3 breaks the streak and resets it to 1, I think
+        #  - easiness is lowered if quality is low
+        #  - interval is shortened if quality is low
+        sm = SMTwo(quality=quality, interval=r.interval,
+                   repetitions=r.repetitions, easiness=r.easiness)
+
+        today = datetime.date.today()
+
+        r.interval = sm.new_interval
+        r.repetitions = sm.new_repetitions
+        r.easiness = sm.new_easiness
+        r.next_review = today + datetime.timedelta(days=sm.new_interval)
         r.save()
 
     return HttpResponse()

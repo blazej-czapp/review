@@ -2,11 +2,14 @@ from django.db import models
 
 class Resource(models.Model):
     caption = models.TextField()
-    rep_count = models.IntegerField('Times repeated', default=0)
-    last_rep_date = models.DateField('Last repetition')
-
     location = models.TextField(blank=True, null=True, help_text="e.g. URL or book title")
     notes = models.TextField(blank=True, null=True, help_text="e.g. section title or book page number")
+
+    # SuperMemo variables
+    interval = models.IntegerField('Next review interval')
+    repetitions = models.IntegerField('Successful review streak')
+    easiness = models.FloatField('Easiness')
+    next_review = models.DateField('Next review')
 
     def __str__(self):
         return self.caption

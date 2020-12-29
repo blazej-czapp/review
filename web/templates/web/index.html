@@ -4,13 +4,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    input[type=submit] {
-        height: 2.2em;
-    }
-
-    button {
+    select {
         height: 2.2em;
         margin: 0.2em;
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid #eeeeee;
     }
 
     body {
@@ -36,9 +37,11 @@
 <link rel="stylesheet" href="{% static 'web/jquery-ui-1.12.1.dialog/jquery-ui.min.css' %}">
 
 <script type="text/javascript">
-function reviewed(resource_id, new_review_count) {
-    $.post("{% url 'web:reviewed' %}", {resource_id : resource_id, new_rep_count : new_review_count, csrfmiddlewaretoken: "{{ csrf_token }}"});
+function reviewed(resource_id) {
+    const quality = document.getElementById("quality_" + resource_id).value;
+    $.post("{% url 'web:reviewed' %}", {resource_id : resource_id, quality : quality, csrfmiddlewaretoken: "{{ csrf_token }}"});
 }
+
 </script>
 
 {% include "web/edit_new_resource.html" %}
