@@ -20,8 +20,15 @@
             {% endif %}
         </div>
     {% endif %}
-    <!-- sending desired new review count in case the button is clicked twice -->
-    <button onclick="reviewed({{ data.id }}, {{ data.rep_count|add:'1' }}); $('#{{ data.id }}').toggle('medium')">Happy</button>
-    <button onclick="reviewed({{ data.id }}, {{ data.rep_count }}); $('#{{ data.id }}').toggle('medium')">Not quite</button>
-    <button onclick="reviewed({{ data.id }}, {{ data.rep_count|add:'-1' }}); $('#{{ data.id }}').toggle('medium')">No clue</button>
+
+    <select name="quality" id="quality_{{ data.id }}" onchange="reviewed({{ data.id }}); $('#{{ data.id }}').toggle('medium')">
+      <option disabled selected value="-1">Review...</option>
+      <option value="0">complete blackout</option>
+      <option value="1">incorrect response; the correct one remembered</option>
+      <option value="2">incorrect response; correct one easy to recall</option>
+      <option value="3">correct response, recalled with serious difficulty</option>
+      <option value="4">correct response after a hesitation</option>
+      <option value="5">perfect response</option>
+    </select>
+    <hr>
 </div>
