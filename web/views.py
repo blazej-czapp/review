@@ -10,7 +10,7 @@ from supermemo2 import SMTwo
 
 @login_required
 def index(request):
-    to_review = Resource.objects.filter(next_review__lte=datetime.date.today())
+    to_review = Resource.objects.filter(next_review__lte=datetime.date.today(), added_by=request.user)
 
     # arbitrary ordering just to keep the list stable
     return render(request, 'web/index.html', {'resources': sorted(to_review, key=attrgetter('id'))})
@@ -26,9 +26,9 @@ def add_new_resource(request):
     # arbitrarily setting initial quality to 3 (that's what they do in supermemo2 docs)
     sm = SMTwo(quality=3, first_visit=True)
 
-    Resource.objects.create(caption=caption, location=request.POST['location'], notes=request.POST['notes'],
-                            interval=sm.new_interval, repetitions=sm.new_repetitions, next_review=sm.next_review,
-                            easiness=sm.new_easiness)
+    Resource.objects.create(added_by=request.user, caption=caption, location=request.POST['location'],
+                            notes=request.POST['notes'], interval=sm.new_interval, repetitions=sm.new_repetitions,
+                            next_review=sm.next_review, easiness=sm.new_easiness)
     return HttpResponse()
 
 @login_required
