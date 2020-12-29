@@ -1,3 +1,4 @@
 Django
 supermemo2
 markdown
+pymdown-extensions
