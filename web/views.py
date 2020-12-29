@@ -5,10 +5,12 @@ from django.shortcuts import redirect
 from operator import attrgetter
 import datetime
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 
 from supermemo2 import SMTwo
 
 @login_required
+@require_http_methods(["GET"])
 def index(request):
     to_review = Resource.objects.filter(next_review__lte=datetime.date.today(), added_by=request.user)
 
@@ -16,6 +18,7 @@ def index(request):
     return render(request, 'web/index.html', {'resources': sorted(to_review, key=attrgetter('id'))})
 
 @login_required
+@require_http_methods(["POST"])
 def add_new_resource(request):
     today = datetime.date.today()
     caption = request.POST['caption']
@@ -32,6 +35,7 @@ def add_new_resource(request):
     return HttpResponse()
 
 @login_required
+@require_http_methods(["POST"])
 def reviewed(request):
     quality = int(request.POST['quality'])
     if quality < 0 or quality > 5:
