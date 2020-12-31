@@ -42,7 +42,19 @@ function reviewed(resource_id) {
     $.post("{% url 'web:reviewed' %}", {resource_id : resource_id, quality : quality, csrfmiddlewaretoken: "{{ csrf_token }}"});
 }
 
+function loadReviewList() {
+    $.get("{% url 'web:review_list' %}", { csrfmiddlewaretoken: "{{ csrf_token }}" },
+        function(data) {
+            $("#review-list").html(data);
+        });
+}
+
+$(function() {
+    loadReviewList();
+});
+
 </script>
 
 {% include "web/edit_new_resource.html" %}
-{% include "web/list_pending.html" %}
+
+<div id="review-list"></div>

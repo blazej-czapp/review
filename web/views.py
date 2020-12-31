@@ -12,10 +12,16 @@ from supermemo2 import SMTwo
 @login_required
 @require_http_methods(["GET"])
 def index(request):
+    # arbitrary ordering just to keep the list stable
+    return render(request, 'web/index.html')
+
+@login_required
+@require_http_methods(["GET"])
+def review_list(request):
     to_review = Resource.objects.filter(next_review__lte=datetime.date.today(), added_by=request.user)
 
     # arbitrary ordering just to keep the list stable
-    return render(request, 'web/index.html', {'resources': sorted(to_review, key=attrgetter('id'))})
+    return render(request, 'web/review_list.html', {'resources': sorted(to_review, key=attrgetter('id'))})
 
 @login_required
 @require_http_methods(["POST"])
