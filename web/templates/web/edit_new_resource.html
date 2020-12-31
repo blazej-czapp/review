@@ -1,7 +1,7 @@
 {% load static %}
 
 <style>
-    #new-resource-form label, #new-resource-form input { display:block; }
+    #edit-resource-form label, #edit-resource-form input { display:block; }
     input.text { margin-bottom:12px; width:100%; padding: .4em; }
     textarea { margin-bottom:12px; width:100%; padding: .4em; }
     fieldset { padding:0; border:0; margin-top:25px; }
@@ -18,53 +18,72 @@
 </style>
 
 <script type="text/javascript">
-    $(function() {
+
+    function updateTips( t ) {
+        const tips = $(".validateTips");
+        tips.text(t).addClass("ui-state-highlight");
+        setTimeout(function() {
+            tips.removeClass("ui-state-highlight", 1500);
+        }, 500);
+    }
+
+    function checkNotEmpty(input, name) {
+        if (input.val().length == 0) {
+            input.addClass( "ui-state-error" );
+            updateTips(name + " cannot be empty");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function validateAndSendNewResource(dialog) {
+        //allFields.removeClass("ui-state-error");
+
+        const valid = checkNotEmpty($("#caption"), "Caption");
+
+        if (valid) {
+            $.post('{% url 'web:add_new_resource' %}', $('#edit-resource-form').serialize())
+                .done(function() { alertify.success('Success'); })
+                .fail(function() { alertify.error('Error'); });
+            dialog.dialog("close");
+        }
+
+        return valid;
+    }
+
+    function validateAndEditExistingResource(dialog, res_id, onSuccess) {
+        //allFields.removeClass("ui-state-error");
+
+        const valid = checkNotEmpty($("#caption"), "Caption");
+
+        if (valid) {
+            var values = $('#edit-resource-form').serialize();
+            values += ('&resource_id=' + res_id);
+            $.post('{% url 'web:edit_existing_resource' %}', values)
+                .done(function() { onSuccess(); alertify.success('Success'); })
+                .fail(function() { alertify.error('Error'); });
+            dialog.dialog("close");
+        }
+
+        return valid;
+    }
+
+    // Creates a jQuery UI dialog based on the #dialog-form. It contains a Cancel button and a customisable
+    // "action" button (e.g. for adding a new iterm or editing an existing one)
+    function setupEditDialog(actionButtonLabel, actionButtonAction) {
         var dialog, form,
             caption = $("#caption"),
             location = $("#location"),
             notes = $("#notes"),
-            allFields = $( [] ).add(caption).add(location).add(notes),
-            tips = $(".validateTips");
+            allFields = $( [] ).add(caption).add(location).add(notes);
 
-        function updateTips( t ) {
-            tips.text(t).addClass("ui-state-highlight");
-            setTimeout(function() {
-                tips.removeClass("ui-state-highlight", 1500);
-            }, 500);
-        }
-
-        function checkNotEmpty(input, name) {
-            if (input.val().length == 0) {
-                input.addClass( "ui-state-error" );
-                updateTips(name + " cannot be empty");
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        function validateAndSendNewResource() {
-            allFields.removeClass("ui-state-error");
-
-            const valid = checkNotEmpty(caption, "Caption");
-
-            if (valid) {
-                $.post('{% url 'web:add_new_resource' %}', $('#new-resource-form').serialize())
-                    .done(function() { alertify.success('Success'); })
-                    .fail(function() { alertify.error('Error'); });
-                dialog.dialog("close");
-            }
-
-            return valid;
-        }
-
-        dialog = $("#dialog-form").dialog({
+        var options = {
           autoOpen: false,
           height: 440,
           width: 350,
           modal: true,
           buttons: {
-            "Add": validateAndSendNewResource,
             Cancel: function() {
               dialog.dialog("close");
             }
@@ -76,38 +95,52 @@
             form[0].reset();
             allFields.removeClass("ui-state-error");
           }
-        });
-     
-        form = dialog.find("form").on("submit", function(event) {
-            event.preventDefault();
-            validateAndSendNewResource();
-        });
+        }
 
-        $("#plus").on("click", function() {
-            dialog.dialog("open");
-        });
-    });
+        options.buttons[actionButtonLabel] = actionButtonAction;
+        dialog = $("#dialog-form").dialog(options);
+        form = dialog.find("form");
+
+        return dialog;
+    };
+
+    function addNewReviewItem() {
+        var dialog = setupEditDialog("Add", function() { return validateAndSendNewResource(dialog); });
+        dialog.dialog("open");
+    }
+
+    function editReviewItem(item_id) {
+        // in order to edit an item, we need to get raw data from the backend (esp. markdown for notes)
+        $.get("{% url 'web:get_raw_resource_data' %}", { resource_id: item_id, csrfmiddlewaretoken: "{{ csrf_token }}" },
+            function(data) {
+                $("#caption").val(data.caption);
+                $("#location").val(data.location);
+                $("#notes").val(data.notes);
+                var dialog = setupEditDialog("OK", function() {
+                    return validateAndEditExistingResource(dialog, item_id, loadReviewList);
+                });
+                dialog.dialog("open");
+            });
+    }
 
 </script>
 
 <!-- Icon by Robert Walsh via https://www.iconfinder.com/icons/619553/add_create_new_plus_icon -->
-<img id="plus" src="{% static 'web/add_blue.png' %}">
+<img id="plus" src="{% static 'web/add_blue.png' %}" onclick="addNewReviewItem()">
 
 <!-- display: none so that it doesn't flash on the screen before dialog() doesn't hide it -->
 <div id="dialog-form" title="Add new review resource" style='display: none;'>
     <p class="validateTips" id="validateTips"></p>
 
-    <form class="new-resource-form" id="new-resource-form" autocomplete="off">
+    <form class="edit-resource-form" id="edit-resource-form" autocomplete="off">
         <fieldset>
             {% csrf_token %}
             <label for="caption">Caption</label>
-            <input type="text" name="caption" id="caption" value="" class="text ui-widget-content ui-corner-all"> 
+            <input type="text" name="caption" id="caption" value="" class="text ui-widget-content ui-corner-all">
             <label for="location">Location</label>
             <input type="text" name="location" id="location" value="" class="text ui-widget-content ui-corner-all">
             <label for="notes">Notes</label>
-            <textarea form="new-resource-form" name="notes" id="notes" value="" class="text ui-widget-content ui-corner-all"></textarea>
-
-            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            <textarea form="edit-resource-form" name="notes" id="notes" rows=5 value="" class="text ui-widget-content ui-corner-all"></textarea>
         </fieldset>
     </form>
 </div>
