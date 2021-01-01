@@ -9,6 +9,7 @@ from operator import attrgetter
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 
+from web.utils import is_hyperlink
 from supermemo2 import SMTwo
 
 @login_required
@@ -46,7 +47,9 @@ def add_new_resource(request):
     # arbitrarily setting initial quality to 3 (that's what they do in supermemo2 docs)
     sm = SMTwo(quality=3, first_visit=True)
 
+    # checking is_hyperlink synchronously because it's easier
     Resource.objects.create(added_by=request.user, caption=caption, location=request.POST['location'],
+                            is_hyperlink=is_hyperlink(request.POST['location']),
                             notes=request.POST['notes'], interval=sm.new_interval, repetitions=sm.new_repetitions,
                             next_review=sm.next_review, easiness=sm.new_easiness)
     return HttpResponse()
@@ -67,6 +70,10 @@ def edit_existing_resource(request):
 
     assert res.count() == 1
     for r in res:
+        # If location hasn't changed, preserve the original value of is_hyperlink - if something was a live hyperlink
+        # at creation then it is still a hyperlink now (but perhaps one gone bad).
+        if r.location != request.POST['location']:
+            r.is_hyperlink = is_hyperlink(request.POST['location'])
         r.caption = caption
         r.location = request.POST['location']
         r.notes = request.POST['notes']

@@ -7,6 +7,7 @@ class Resource(models.Model):
     caption = models.TextField()
     location = models.TextField(blank=True, null=True, help_text="e.g. URL or book title")
     notes = models.TextField(blank=True, null=True, help_text="e.g. section title or book page number")
+    is_hyperlink = models.BooleanField(help_text="Is location a live hyperlink?")
 
     # SuperMemo variables
     interval = models.IntegerField('Next review interval')
@@ -20,6 +21,3 @@ class Resource(models.Model):
 
     def __str__(self):
         return self.caption
-
-    def is_hyperlink(self):
-        return self.location.startswith("http") or self.location.startswith("www")
