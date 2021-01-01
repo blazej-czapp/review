@@ -1,7 +1,7 @@
 {% load static %}
 
 <style>
-    #edit-resource-form label, #edit-resource-form input { display:block; }
+    #edit-review-item-form label, #edit-review-item-form input { display:block; }
     input.text { margin-bottom:12px; width:100%; padding: .4em; }
     textarea { margin-bottom:12px; width:100%; padding: .4em; }
     fieldset { padding:0; border:0; margin-top:25px; }
@@ -37,13 +37,13 @@
         }
     }
 
-    function validateAndSendNewResource(dialog) {
+    function validateAndSendNewReviewItem(dialog) {
         //allFields.removeClass("ui-state-error");
 
         const valid = checkNotEmpty($("#caption"), "Caption");
 
         if (valid) {
-            $.post('{% url 'web:add_new_resource' %}', $('#edit-resource-form').serialize())
+            $.post('{% url 'web:add_new_review_item' %}', $('#edit-review-item-form').serialize())
                 .done(function() { alertify.success('Success'); })
                 .fail(function() { alertify.error('Error'); });
             dialog.dialog("close");
@@ -52,15 +52,15 @@
         return valid;
     }
 
-    function validateAndEditExistingResource(dialog, res_id, onSuccess) {
+    function validateAndEditExistingReviewItem(dialog, item_id, onSuccess) {
         //allFields.removeClass("ui-state-error");
 
         const valid = checkNotEmpty($("#caption"), "Caption");
 
         if (valid) {
-            var values = $('#edit-resource-form').serialize();
-            values += ('&resource_id=' + res_id);
-            $.post('{% url 'web:edit_existing_resource' %}', values)
+            var values = $('#edit-review-item-form').serialize();
+            values += ('&review_item_id=' + item_id);
+            $.post('{% url 'web:edit_existing_review_item' %}', values)
                 .done(function() { onSuccess(); alertify.success('Success'); })
                 .fail(function() { alertify.error('Error'); });
             dialog.dialog("close");
@@ -105,19 +105,19 @@
     };
 
     function addNewReviewItem() {
-        var dialog = setupEditDialog("Add", function() { return validateAndSendNewResource(dialog); });
+        var dialog = setupEditDialog("Add", function() { return validateAndSendNewReviewItem(dialog); });
         dialog.dialog("open");
     }
 
     function editReviewItem(item_id) {
         // in order to edit an item, we need to get raw data from the backend (esp. markdown for notes)
-        $.get("{% url 'web:get_raw_resource_data' %}", { resource_id: item_id, csrfmiddlewaretoken: "{{ csrf_token }}" },
+        $.get("{% url 'web:get_raw_review_item_data' %}", { review_item_id: item_id, csrfmiddlewaretoken: "{{ csrf_token }}" },
             function(data) {
                 $("#caption").val(data.caption);
                 $("#location").val(data.location);
                 $("#notes").val(data.notes);
                 var dialog = setupEditDialog("OK", function() {
-                    return validateAndEditExistingResource(dialog, item_id, loadReviewList);
+                    return validateAndEditExistingReviewItem(dialog, item_id, loadReviewItemsList);
                 });
                 dialog.dialog("open");
             });
@@ -129,10 +129,10 @@
 <img id="plus" src="{% static 'web/add_blue.png' %}" onclick="addNewReviewItem()">
 
 <!-- display: none so that it doesn't flash on the screen before dialog() doesn't hide it -->
-<div id="dialog-form" title="Add new review resource" style='display: none;'>
+<div id="dialog-form" title="Add new review review item" style='display: none;'>
     <p class="validateTips" id="validateTips"></p>
 
-    <form class="edit-resource-form" id="edit-resource-form" autocomplete="off">
+    <form class="edit-review-item-form" id="edit-review-item-form" autocomplete="off">
         <fieldset>
             {% csrf_token %}
             <label for="caption">Caption</label>
@@ -140,7 +140,7 @@
             <label for="location">Location</label>
             <input type="text" name="location" id="location" value="" class="text ui-widget-content ui-corner-all">
             <label for="notes">Notes</label>
-            <textarea form="edit-resource-form" name="notes" id="notes" rows=5 value="" class="text ui-widget-content ui-corner-all"></textarea>
+            <textarea form="edit-review-item-form" name="notes" id="notes" rows=5 value="" class="text ui-widget-content ui-corner-all"></textarea>
         </fieldset>
     </form>
 </div>

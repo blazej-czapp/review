@@ -38,12 +38,12 @@
 <link rel="stylesheet" href="{% static 'web/jquery-ui-1.12.1.dialog/jquery-ui.min.css' %}">
 
 <script type="text/javascript">
-function reviewed(resource_id) {
-    const quality = document.getElementById("quality_" + resource_id).value;
-    $.post("{% url 'web:reviewed' %}", {resource_id : resource_id, quality : quality, csrfmiddlewaretoken: "{{ csrf_token }}"});
+function reviewed(review_item_id) {
+    const quality = document.getElementById("quality_" + review_item_id).value;
+    $.post("{% url 'web:reviewed' %}", {review_item_id : review_item_id, quality : quality, csrfmiddlewaretoken: "{{ csrf_token }}"});
 }
 
-function loadReviewList() {
+function loadReviewItemsList() {
     $.get("{% url 'web:review_list' %}", { csrfmiddlewaretoken: "{{ csrf_token }}" },
         function(data) {
             $("#review-list").html(data);
@@ -51,11 +51,11 @@ function loadReviewList() {
 }
 
 $(function() {
-    loadReviewList();
+    loadReviewItemsList();
 });
 
 </script>
 
-{% include "web/edit_new_resource.html" %}
+{% include "web/edit_new_review_item.html" %}
 
 <div id="review-list"></div>

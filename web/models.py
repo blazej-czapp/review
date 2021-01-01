@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-class Resource(models.Model):
+class ReviewItem(models.Model):
     added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     caption = models.TextField()
