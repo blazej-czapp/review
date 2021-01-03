@@ -9,7 +9,7 @@ from operator import attrgetter
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 
-from web.utils import is_hyperlink
+from web.utils import conversion_to_hyperlink
 from supermemo2 import SMTwo
 
 @login_required
@@ -47,11 +47,11 @@ def add_new_review_item(request):
     # arbitrarily setting initial quality to 3 (that's what they do in supermemo2 docs)
     sm = SMTwo(quality=3, first_visit=True)
 
-    # checking is_hyperlink synchronously because it's easier
-    ReviewItem.objects.create(added_by=request.user, caption=caption, location=request.POST['location'],
-                            is_hyperlink=is_hyperlink(request.POST['location']),
-                            notes=request.POST['notes'], interval=sm.new_interval, repetitions=sm.new_repetitions,
-                            next_review=sm.next_review, easiness=sm.new_easiness)
+    conv = conversion_to_hyperlink(request.POST['location'])
+    sanitized_location = conv + request.POST['location'] if conv is not None else request.POST['location']
+    ReviewItem.objects.create(added_by=request.user, caption=caption, location=sanitized_location,
+                            is_hyperlink=conv is not None, notes=request.POST['notes'], interval=sm.new_interval,
+                            repetitions=sm.new_repetitions, next_review=sm.next_review, easiness=sm.new_easiness)
     return HttpResponse()
 
 @login_required
@@ -73,7 +73,10 @@ def edit_existing_review_item(request):
         # If location hasn't changed, preserve the original value of is_hyperlink - if something was a live hyperlink
         # at creation then it is still a hyperlink now (but perhaps one gone bad).
         if item.location != request.POST['location']:
-            item.is_hyperlink = is_hyperlink(request.POST['location'])
+            conv = conversion_to_hyperlink(request.POST['location'])
+            sanitized_location = conv + request.POST['location'] if conv is not None else request.POST['location']
+            item.is_hyperlink = conv is not None
+            item.location = sanitized_location
         item.caption = caption
         item.location = request.POST['location']
         item.notes = request.POST['notes']
