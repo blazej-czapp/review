@@ -3,25 +3,25 @@
 <div class="review_item" id="{{ data.id }}">
     <div class="review_item_caption">
         {% if data.is_hyperlink %}
-            <a target="_blank" rel="noopener noreferrer" href='{{ data.location }}'>{{ data.caption }}</a>
+            <h3><a target="_blank" rel="noopener noreferrer" href='{{ data.location }}'>{{ data.caption }}</a></h3>
         {% else %}
-            <strong>{{ data.caption }}</strong>
+            <h3>{{ data.caption }}</h3>
         {% endif %}
     </div>
     {% if data.location and not data.is_hyperlink or data.notes %}
         <div class="review_item_details">
             {% if not data.is_hyperlink %}
-                {{ data.location }}<br>
+                <span class=review_item_location_non_hyperlink>{{ data.location }}</span><br>
             {% endif %}
             {% if data.notes %}
                 {% autoescape off %}
                     {{ data.notes | markdown }}
-                {% endautoescape %}<br>
+                {% endautoescape %}
             {% endif %}
         </div>
     {% endif %}
 
-    <select name="quality" id="quality_{{ data.id }}" onchange="reviewed({{ data.id }}); $('#{{ data.id }}').toggle('medium')">
+    <select name="quality" class="review_quality_select" id="quality_{{ data.id }}" onchange="reviewed({{ data.id }}); $('#{{ data.id }}').toggle('medium')">
       <option disabled selected value="-1">Review...</option>
       <option value="0">complete blackout</option>
       <option value="1">incorrect response; the correct one remembered</option>

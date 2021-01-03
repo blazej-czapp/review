@@ -6,16 +6,21 @@ body {
     padding: 0.5em;
 }
 
-.review_item_caption {
-    padding-bottom: 0.5em;
-}
-
 .review_item_caption a {
     color:#3399ff;
     text-decoration: none;
 }
 
+.review_item_location_non_hyperlink {
+    font-weight: bold;
+    font-style: italic;
+    color: #808080;
+}
+
 .review_item_details {
     padding-left: 1em;
-    padding-bottom: 0.5em;
+}
+
+.review_quality_select {
+    margin-top: 1em;
 }
