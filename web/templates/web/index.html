@@ -31,6 +31,9 @@
 <link rel="stylesheet" type="text/css" href="{% static 'web/alertify/css/themes/default.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'web/alertify/css/alertify.min.css' %}">
 
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
 <script type="text/javascript" src="{% static 'web/jquery-3.4.1.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'web/alertify/alertify.min.js' %}"></script>
 
@@ -47,6 +50,13 @@ function loadReviewItemsList() {
     $.get("{% url 'web:review_list' %}", { csrfmiddlewaretoken: "{{ csrf_token }}" },
         function(data) {
             $("#review-list").html(data);
+            // Need to re-run MathJax typesetting after the list of review items is loaded - it would have run
+            // automatically at page load when there was nothing there.
+            // Only running MathJax here relies on this function being called every time something changes. If we end up
+            // e.g. reloading individual review items, this will have to change.
+            // Also, not doing anything fancy with chaining promises (see
+            // http://docs.mathjax.org/en/latest/advanced/typeset.html). Should be sufficient for now.
+            MathJax.typesetPromise();
         });
 }
 
@@ -56,6 +66,9 @@ $(function() {
 
 </script>
 
+<body>
+
 {% include "web/edit_new_review_item.html" %}
 
 <div id="review-list"></div>
+</body>
