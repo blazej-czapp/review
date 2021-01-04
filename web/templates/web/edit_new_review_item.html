@@ -44,7 +44,7 @@
 
         if (valid) {
             $.post('{% url 'web:add_new_review_item' %}', $('#edit-review-item-form').serialize())
-                .done(function() { alertify.success('Success'); })
+                .done(function() { alertify.success('Added'); })
                 .fail(function() { alertify.error('Error'); });
             dialog.dialog("close");
         }
@@ -61,7 +61,7 @@
             var values = $('#edit-review-item-form').serialize();
             values += ('&review_item_id=' + item_id);
             $.post('{% url 'web:edit_existing_review_item' %}', values)
-                .done(function() { onSuccess(); alertify.success('Success'); })
+                .done(function() { onSuccess(); })
                 .fail(function() { alertify.error('Error'); });
             dialog.dialog("close");
         }
