@@ -24,3 +24,8 @@ body {
 .review_quality_select {
     margin-top: 1em;
 }
+
+summary {
+    cursor: pointer;
+    outline: none;
+}
