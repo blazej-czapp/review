@@ -1,6 +1,8 @@
 import datetime
 import json
 
+import supermemo2 as sm2
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from web.models import ReviewItem
@@ -10,7 +12,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 
 from web.utils import conversion_to_hyperlink
-from supermemo2 import SMTwo
 
 @login_required
 @require_http_methods(["GET"])
@@ -40,13 +41,14 @@ def add_new_review_item(request):
         return HttpResponse(status=400, reason='caption is empty')
 
     # arbitrarily setting initial quality to 3 (that's what they do in supermemo2 docs)
-    sm = SMTwo(quality=3, first_visit=True)
+    sm = sm2.first_review(quality=3)
 
     conv = conversion_to_hyperlink(request.POST['location'])
     sanitized_location = conv + request.POST['location'] if conv is not None else request.POST['location']
+    #new_repetitions is 2 at start, feels wrong
     ReviewItem.objects.create(added_by=request.user, caption=caption, location=sanitized_location,
-                            is_hyperlink=conv is not None, notes=request.POST['notes'], interval=sm.new_interval,
-                            repetitions=sm.new_repetitions, next_review=sm.next_review, easiness=sm.new_easiness)
+                              is_hyperlink=conv is not None, notes=request.POST['notes'], interval=sm.interval,
+                              repetitions=sm.repetitions, next_review=sm.review_date, easiness=sm.easiness)
     return HttpResponse()
 
 @login_required
@@ -81,20 +83,22 @@ def reviewed(request):
         return HttpResponse(status=400, reason='Invalid recall quality: ' + quality)
 
     item = ReviewItem.objects.get(added_by=request.user, id=request.POST['review_item_id'])
+    today = datetime.date.today()
 
     # Take current review's quality and infer new values for review variables:
     #  - repetitions: quality <3 breaks the streak and resets it to 1, I think
     #  - easiness is lowered if quality is low
     #  - interval is shortened if quality is low
-    sm = SMTwo(quality=quality, interval=item.interval,
-               repetitions=item.repetitions, easiness=item.easiness)
+    # supermemo2's API doesn't make much sense to me, I'm not sure this is the right way to use it (do I have to call
+    # first_review() every time? The docs discourage instantiating SMTwo directly.)
+    sm = sm2.first_review(0)
+    sm2.modify(sm, quality=quality, easiness=item.easiness, interval=item.interval, repetitions=item.repetitions,
+               review_date=today)
 
-    today = datetime.date.today()
-
-    item.interval = sm.new_interval
-    item.repetitions = sm.new_repetitions
-    item.easiness = sm.new_easiness
-    item.next_review = today + datetime.timedelta(days=sm.new_interval)
+    item.interval = sm.interval
+    item.repetitions = sm.repetitions
+    item.easiness = sm.easiness
+    item.next_review = sm.review_date
     item.save()
 
     return HttpResponse()
