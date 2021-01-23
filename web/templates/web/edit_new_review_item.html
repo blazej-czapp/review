@@ -70,8 +70,8 @@
     }
 
     // Creates a jQuery UI dialog based on the #dialog-form. It contains a Cancel button and a customisable
-    // "action" button (e.g. for adding a new iterm or editing an existing one)
-    function setupEditDialog(actionButtonLabel, actionButtonAction) {
+    // "action" button (e.g. for adding a new item or editing an existing one)
+    function setupEditDialog(dialogTitle, actionButtonLabel, actionButtonAction) {
         var dialog, form,
             caption = $("#caption"),
             location = $("#location"),
@@ -99,13 +99,15 @@
 
         options.buttons[actionButtonLabel] = actionButtonAction;
         dialog = $("#dialog-form").dialog(options);
+        dialog.dialog("option", "title", dialogTitle);
         form = dialog.find("form");
 
         return dialog;
     };
 
     function addNewReviewItem() {
-        var dialog = setupEditDialog("Add", function() { return validateAndSendNewReviewItem(dialog); });
+        var dialog = setupEditDialog("Add review item", "Add",
+                                     function() { return validateAndSendNewReviewItem(dialog); });
         dialog.dialog("open");
     }
 
@@ -116,7 +118,7 @@
                 $("#caption").val(data.caption);
                 $("#location").val(data.location);
                 $("#notes").val(data.notes);
-                var dialog = setupEditDialog("OK", function() {
+                var dialog = setupEditDialog("Edit review item", "OK", function() {
                     return validateAndEditExistingReviewItem(dialog, item_id, loadReviewItemsList);
                 });
                 dialog.dialog("open");
