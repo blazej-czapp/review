@@ -15,7 +15,7 @@ def conversion_to_hyperlink(location):
         try:
             if requests.get('http://' + location).ok:
                 return 'http://'
-        except requests.exceptions.ConnectionError:
+        except (requests.exceptions.ConnectionError, requests.exceptions.InvalidURL):
             return None
     except requests.exceptions.ConnectionError:
         return None
