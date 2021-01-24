@@ -10,7 +10,8 @@
     </div>
     {% if data.location and not data.is_hyperlink or data.notes %}
         <div class="review_item_details">
-            {% if not data.is_hyperlink %}
+            <!-- don't include anything for empty location (esp. the <br>) -->
+            {% if not data.is_hyperlink and data.location %}
                 <span class=review_item_location_non_hyperlink>{{ data.location }}</span><br>
             {% endif %}
             {% if data.notes %}
