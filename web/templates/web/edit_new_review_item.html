@@ -98,6 +98,7 @@
         }
 
         options.buttons[actionButtonLabel] = actionButtonAction;
+        options.position = { my: "top", at: "top+10", of: window };
         dialog = $("#dialog-form").dialog(options);
         dialog.dialog("option", "title", dialogTitle);
         form = dialog.find("form");
