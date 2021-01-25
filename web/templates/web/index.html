@@ -43,7 +43,11 @@
 <script type="text/javascript">
 function reviewed(review_item_id) {
     const quality = document.getElementById("quality_" + review_item_id).value;
-    $.post("{% url 'web:reviewed' %}", {review_item_id : review_item_id, quality : quality, csrfmiddlewaretoken: "{{ csrf_token }}"});
+    $.post("{% url 'web:reviewed' %}", {review_item_id : review_item_id, quality : quality, csrfmiddlewaretoken: "{{ csrf_token }}"}, function(data) {
+        if (data.items_due_count == 0) {
+            $("#review_list_header").html("All done for today");
+        }
+    });
 }
 
 function loadReviewItemsList() {

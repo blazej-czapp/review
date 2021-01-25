@@ -2,7 +2,7 @@
 
 <div id="review_items">
 {% if review_items %}
-    <h2>Today's review:</h2>
+    <h2 id="review_list_header">Today's review:</h2>
     {% for item in review_items %}
         {% include 'web/review_item.html' with data=item %}
     {% endfor %}

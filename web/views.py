@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 
 from web.utils import conversion_to_hyperlink
+from web.logic import items_due
 
 @login_required
 @require_http_methods(["GET"])
@@ -21,8 +22,7 @@ def index(request):
 @login_required
 @require_http_methods(["GET"])
 def review_list(request):
-    # arbitrary ordering just to keep the list stable
-    to_review = ReviewItem.objects.filter(next_review__lte=datetime.date.today(), added_by=request.user).order_by('id')
+    to_review = items_due(request.user, datetime.date.today())
     return render(request, 'web/review_list.html', {'review_items': to_review})
 
 @login_required
@@ -101,4 +101,4 @@ def reviewed(request):
     item.next_review = sm.review_date
     item.save()
 
-    return HttpResponse()
+    return JsonResponse({ 'items_due_count': len(items_due(request.user, today)) })
