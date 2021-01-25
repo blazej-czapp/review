@@ -41,6 +41,7 @@
 <link rel="stylesheet" href="{% static 'web/jquery-ui-1.12.1.dialog/jquery-ui.min.css' %}">
 
 <script type="text/javascript">
+'use strict';
 function reviewed(review_item_id) {
     const quality = document.getElementById("quality_" + review_item_id).value;
     $.post("{% url 'web:reviewed' %}", {review_item_id : review_item_id, quality : quality, csrfmiddlewaretoken: "{{ csrf_token }}"}, function(data) {

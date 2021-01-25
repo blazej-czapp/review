@@ -18,6 +18,7 @@
 </style>
 
 <script type="text/javascript">
+    'use strict';
 
     function updateTips( t ) {
         const tips = $(".validateTips");
@@ -58,8 +59,7 @@
         const valid = checkNotEmpty($("#caption"), "Caption");
 
         if (valid) {
-            var values = $('#edit-review-item-form').serialize();
-            values += ('&review_item_id=' + item_id);
+            const values = $('#edit-review-item-form').serialize() + ('&review_item_id=' + item_id);
             $.post('{% url 'web:edit_existing_review_item' %}', values)
                 .done(function() { onSuccess(); })
                 .fail(function() { alertify.error('Error'); });
@@ -72,13 +72,13 @@
     // Creates a jQuery UI dialog based on the #dialog-form. It contains a Cancel button and a customisable
     // "action" button (e.g. for adding a new item or editing an existing one)
     function setupEditDialog(dialogTitle, actionButtonLabel, actionButtonAction) {
-        var dialog, form,
-            caption = $("#caption"),
-            location = $("#location"),
-            notes = $("#notes"),
-            allFields = $( [] ).add(caption).add(location).add(notes);
+        let dialog, form;
+        const caption = $("#caption"),
+              location = $("#location"),
+              notes = $("#notes"),
+              allFields = $( [] ).add(caption).add(location).add(notes);
 
-        var options = {
+        const options = {
           autoOpen: false,
           height: 440,
           width: 350,
@@ -107,7 +107,7 @@
     };
 
     function addNewReviewItem() {
-        var dialog = setupEditDialog("Add review item", "Add",
+        const dialog = setupEditDialog("Add review item", "Add",
                                      function() { return validateAndSendNewReviewItem(dialog); });
         dialog.dialog("open");
     }
@@ -119,7 +119,7 @@
                 $("#caption").val(data.caption);
                 $("#location").val(data.location);
                 $("#notes").val(data.notes);
-                var dialog = setupEditDialog("Edit review item", "OK", function() {
+                const dialog = setupEditDialog("Edit review item", "OK", function() {
                     return validateAndEditExistingReviewItem(dialog, item_id, loadReviewItemsList);
                 });
                 dialog.dialog("open");
