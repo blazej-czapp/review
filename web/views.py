@@ -1,7 +1,7 @@
 import datetime
 import json
 
-import supermemo2 as sm2
+from  supermemo2 import SMTwo
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -40,8 +40,8 @@ def add_new_review_item(request):
     if not caption:
         return HttpResponse(status=400, reason='caption is empty')
 
-    # arbitrarily setting initial quality to 3 (that's what they do in supermemo2 docs)
-    sm = sm2.first_review(quality=3)
+    # arbitrarily setting initial quality to 3
+    sm = SMTwo.first_review(quality=3)
 
     conv = conversion_to_hyperlink(request.POST['location'])
     sanitized_location = conv + request.POST['location'] if conv is not None else request.POST['location']
@@ -89,16 +89,13 @@ def reviewed(request):
     #  - repetitions: quality <3 breaks the streak and resets it to 1, I think
     #  - easiness is lowered if quality is low
     #  - interval is shortened if quality is low
-    # supermemo2's API doesn't make much sense to me, I'm not sure this is the right way to use it (do I have to call
-    # first_review() every time? The docs discourage instantiating SMTwo directly.)
-    sm = sm2.first_review(0)
-    sm2.modify(sm, quality=quality, easiness=item.easiness, interval=item.interval, repetitions=item.repetitions,
-               review_date=today)
+    sm = SMTwo(easiness=item.easiness, interval=item.interval, repetitions=item.repetitions)
+    reviewed = sm.review(quality, today)
 
-    item.interval = sm.interval
-    item.repetitions = sm.repetitions
-    item.easiness = sm.easiness
-    item.next_review = sm.review_date
+    item.interval = reviewed.interval
+    item.repetitions = reviewed.repetitions
+    item.easiness = reviewed.easiness
+    item.next_review = reviewed.review_date
     item.save()
 
     return JsonResponse({ 'items_due_count': len(items_due(request.user, today)) })
