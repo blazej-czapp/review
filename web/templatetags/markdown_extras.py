@@ -6,6 +6,7 @@ from django import template
 from django.template.defaultfilters import stringfilter
 
 import markdown as md
+from .nesting_fenced_code import NestingFencedCodeExtension
 
 register = template.Library()
 
@@ -13,4 +14,4 @@ register = template.Library()
 @register.filter()
 @stringfilter
 def markdown(value):
-    return md.markdown(value, extensions=['markdown.extensions.fenced_code', 'pymdownx.details', 'codehilite'])
+    return md.markdown(value, extensions=['codehilite', NestingFencedCodeExtension(), 'pymdownx.details'])
