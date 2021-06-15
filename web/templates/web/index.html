@@ -26,11 +26,6 @@
   </style>
 </head>
 
-<form action="accounts/logout">
-    <input type="submit" value="Logout" style="float: right;">
-</form>
-
-
 <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'web/code_styles.css' %}">
 
@@ -48,6 +43,19 @@
 
 <script type="text/javascript">
 'use strict';
+function showHelp() {
+    const options = {
+      autoOpen: false,
+      // jqueryUI dialog doesn't like setting height to 95%
+      height: $(window).height() * 0.95,
+      width: "95%",
+      modal: true,
+      title: "Help"
+    }
+    let dialog = $("#help-div").dialog(options);
+    dialog.dialog("open");
+}
+
 function reviewed(review_item_id) {
     const quality = document.getElementById("quality_" + review_item_id).value;
     $.post("{% url 'web:reviewed' %}", {review_item_id : review_item_id, quality : quality, csrfmiddlewaretoken: "{{ csrf_token }}"}, function(data) {
@@ -67,6 +75,7 @@ function loadReviewItemsList() {
             // e.g. reloading individual review items, this will have to change.
             // Also, not doing anything fancy with chaining promises (see
             // http://docs.mathjax.org/en/latest/advanced/typeset.html). Should be sufficient for now.
+            console.log("typesetting math");
             MathJax.typesetPromise();
         });
 }
@@ -79,9 +88,16 @@ $(function() {
 
 <body>
 
+<form action="accounts/logout">
+    <input type="submit" value="Logout" style="float: right; margin-left: 0.4em;">
+</form>
+<button id="help-button" style="float: right;" onclick="showHelp()">Help</button>
+
+
 <div id="review-list"></div>
 
 {% include "web/edit_new_review_item.html" %}
+{% include "web/help.html" %}
 
 </body>
 </html>

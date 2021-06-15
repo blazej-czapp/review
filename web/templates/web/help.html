@@ -1,0 +1,47 @@
+<div id="help-div" style='display: none;'>
+    <h1>Markdown</h1>
+
+    <h2>MathJax</h2>
+    <h3>Inline</h3>
+    <code>\\(...\\)</code> - need to escape the backslashes so that Markdown doesn't eat them and MathJax sees <code>\(</code> etc.
+    <h3>Block</h3>
+<pre>
+$$
+...
+$$</pre>
+
+    <h2>Highlighted code blocks</h2>
+<pre>
+```C++
+int main() {
+    return 0;
+}
+```</pre>
+
+    or
+
+<pre>
+~~~C++
+int main() {
+    return 0;
+}
+~~~</pre>
+
+    <h2>Folding blocks</h2>
+
+    Using <code>pymdownx.details</code> extension. Syntax:
+
+    <pre>
+??? "Multi word summary needs to be in quotes"
+    Content must be indented</pre>
+
+    Folding code blocks also work:
+
+    <pre>
+??? Example
+    ~~~C++
+    int main() {
+        return 0;
+    }
+    ~~~</pre>
+</div>
