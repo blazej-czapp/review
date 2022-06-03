@@ -1,0 +1,2 @@
+docker/docker_entrypoint.sh eol=lf
+docker/init_dev.sh eol=lf
