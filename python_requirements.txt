@@ -4,3 +4,4 @@ markdown
 pymdown-extensions
 pygments
 requests
+tzdata

@@ -33,7 +33,7 @@ class NestingFencedCodeExtension(Extension):
     Mostly a copy of markdown's FencedCodeExtension (as of 3ea29f9d9b7) modified to allow
     nesting within e.g. pymdownx.details block. This is achieved primarily by positioning the
     HTML placeholder returned from self.md.htmlStash where the original opening fence was
-    so that if it's indented withing a pymdownx.details block, it remains so.
+    so that if it's indented within a pymdownx.details block, it remains so.
 
     Before, this block:
     ??? Summary

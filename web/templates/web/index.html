@@ -42,6 +42,13 @@
 <link rel="stylesheet" href="{% static 'web/jquery-ui-1.12.1.dialog/jquery-ui.min.css' %}">
 
 <script type="text/javascript">
+window.MathJax = {
+    tex: {
+        // enable single $'s to delimit inline math for MathJax
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+};
+
 'use strict';
 function showHelp() {
     const options = {
