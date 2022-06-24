@@ -10,4 +10,5 @@ urlpatterns = [
     path('reviewed', views.reviewed, name='reviewed'),
     path('review_list', views.review_list, name='review_list'),
     path('get_raw_review_item_data', views.get_raw_review_item_data, name='get_raw_review_item_data'),
+    path('render_markdown', views.render_markdown, name='render_markdown'),
 ]

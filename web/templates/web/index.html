@@ -80,14 +80,14 @@ function loadReviewItemsList() {
             // automatically at page load when there was nothing there.
             // Only running MathJax here relies on this function being called every time something changes. If we end up
             // e.g. reloading individual review items, this will have to change.
-            // Also, not doing anything fancy with chaining promises (see
-            // http://docs.mathjax.org/en/latest/advanced/typeset.html). Should be sufficient for now.
+            // Also, not doing anything fancy with async typesetting (see
+            // http://docs.mathjax.org/en/latest/advanced/typeset.html), should be sufficient for now.
             console.log("typesetting math");
-            MathJax.typesetPromise();
+            MathJax.typeset($('html'));
         });
 }
 
-$(function() {
+$(window).bind("load", function () {
     loadReviewItemsList();
 });
 

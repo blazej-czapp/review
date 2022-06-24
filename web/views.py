@@ -10,6 +10,7 @@ from django.shortcuts import redirect
 from operator import attrgetter
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
+from django.template.loader import render_to_string
 
 from web.utils import conversion_to_hyperlink
 from web.logic import items_due
@@ -24,6 +25,14 @@ def index(request):
 def review_list(request):
     to_review = items_due(request.user, datetime.date.today())
     return render(request, 'web/review_list.html', {'review_items': to_review})
+
+
+@login_required
+@require_http_methods(["GET"])
+def render_markdown(request):
+    rendered = render_to_string('web/render_markdown.html', {'content': request.GET["markdown"]}).strip()
+    return JsonResponse({ 'rendered': rendered })
+
 
 @login_required
 @require_http_methods(["GET"])

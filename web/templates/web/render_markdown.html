@@ -1,0 +1,5 @@
+{% load markdown_extras %}
+
+{% autoescape off %}
+    {{ content | markdown }}
+{% endautoescape %}
