@@ -5,16 +5,16 @@ def conversion_to_hyperlink(location):
        Or so you'd think! This works fine in Azure, but at home, I get a page from ISP about an unknown address
        and THAT page returns a 200. Watch out for this.
 
-       Return a string to prepend to make location a proper hyperlink or None if not possible. Without the conversion
-       (i.e. prepending a "http://"" if missing) a link would be interpreted as relative to the review page.
+       Return a function that converts location to a valid hyperlink or None if not possible. Note that without
+       a schema, a link is interpreted as relative to the page itself.
     """
     try:
         if requests.get(location).ok:
-            return ''
+            return lambda loc: loc
     except requests.exceptions.MissingSchema:
         try:
             if requests.get('http://' + location).ok:
-                return 'http://'
+                return lambda loc: f'http://{loc}'
         except (requests.exceptions.ConnectionError, requests.exceptions.InvalidURL):
             return None
     except requests.exceptions.ConnectionError:

@@ -53,7 +53,7 @@ def add_new_review_item(request):
     sm = SMTwo.first_review(quality=3)
 
     conv = conversion_to_hyperlink(request.POST['location'])
-    sanitized_location = conv + request.POST['location'] if conv is not None else request.POST['location']
+    sanitized_location = conv(request.POST['location']) if conv is not None else request.POST['location']
     #new_repetitions is 2 at start, feels wrong
     ReviewItem.objects.create(added_by=request.user, caption=caption, location=sanitized_location,
                               is_hyperlink=conv is not None, notes=request.POST['notes'], interval=sm.interval,
@@ -74,7 +74,7 @@ def edit_existing_review_item(request):
     # at creation then it is still a hyperlink now (but perhaps one gone bad).
     if item.location != request.POST['location']:
         conv = conversion_to_hyperlink(request.POST['location'])
-        sanitized_location = conv + request.POST['location'] if conv is not None else request.POST['location']
+        sanitized_location = conv(request.POST['location']) if conv is not None else request.POST['location']
         item.is_hyperlink = conv is not None
         item.location = sanitized_location
     item.caption = caption
